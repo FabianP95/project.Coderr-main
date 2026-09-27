@@ -29,4 +29,9 @@ media/
 .DS_Store
 Thumbs.db
 
+#Agent
+CLAUDE.md
+.claude/
+
+#Frontend
 frontend/
