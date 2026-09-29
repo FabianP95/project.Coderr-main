@@ -38,3 +38,7 @@ frontend/
 
 #Doku
 endpoints_doc.txt
+
+#Testing
+.postman
+postman/
