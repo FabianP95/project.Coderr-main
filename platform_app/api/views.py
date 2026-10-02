@@ -8,7 +8,6 @@ from .serializers import (
     ReviewSerializer,
     OfferSerializer,
     OrderSerializer,
-    BaseInfoSerializer,
 )
 
 

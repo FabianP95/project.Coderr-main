@@ -61,3 +61,67 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
 
         return user
+
+
+class UserSerializer(serializers.ModelSerializer):
+    user = serializers.IntegerField(source="id", read_only=True)
+    created_at = serializers.DateTimeField(source="date_joined", read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "user",
+            "username",
+            "first_name",
+            "last_name",
+            "file",
+            "location",
+            "tel",
+            "description",
+            "working_hours",
+            "type",
+            "email",
+            "created_at",
+        ]
+        read_only_fields = ["username", "type"]
+
+    def validate_email(self, value):
+        existing_users = User.objects.filter(email__iexact=value)
+
+        if self.instance is not None:
+            existing_users = existing_users.exclude(pk=self.instance.pk)
+
+        if existing_users.exists():
+            raise serializers.ValidationError("Email already exists")
+        return value
+
+
+class BusinessUserSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "user",
+            "username",
+            "first_name",
+            "last_name",
+            "file",
+            "location",
+            "tel",
+            "description",
+            "working_hours",
+            "type",
+        ]
+
+
+class CustomerUserSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "user",
+            "username",
+            "first_name",
+            "last_name",
+            "file",
+            "uploaded_at",
+            "type",
+        ]

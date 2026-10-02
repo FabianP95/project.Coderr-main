@@ -1,12 +1,19 @@
-
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework import generics
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-
 from rest_framework import status
 
-from .serializers import UserLoginSerializer, RegistrationSerializer
+from user_auth_app.models import User
+from .permissions import IsProfileCreator
+from .serializers import (
+    UserLoginSerializer,
+    RegistrationSerializer,
+    UserSerializer,
+    CustomerUserSerializer,
+    BusinessUserSerializer,
+)
 
 
 class CustomLogin(APIView):
@@ -45,5 +52,23 @@ class RegistrationView(APIView):
                 "user_id": saved_account.id,
             }
             return Response(data, status=status.HTTP_201_CREATED)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileDetailView(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated, IsProfileCreator]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class BusinessProfileListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = BusinessUserSerializer
+    queryset = User.objects.filter(type=User.Type.BUSINESS)
+
+
+class CustomerProfileListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CustomerUserSerializer
+    queryset = User.objects.filter(type=User.Type.CUSTOMER)
