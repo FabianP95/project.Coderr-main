@@ -2,6 +2,7 @@
 
 import django.core.validators
 import django.db.models.deletion
+import django.utils.timezone
 from django.conf import settings
 from django.db import migrations, models
 
@@ -17,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='offer',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=''),
+            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
             preserve_default=False,
         ),
         migrations.AddField(

@@ -1,8 +1,6 @@
 from rest_framework import serializers
 
-from platform_app.models import Offer,Review,Order
-from user_auth_app.models import User
-
+from platform_app.models import Offer, Order, Review
 
 
 class OfferSerializer(serializers.ModelSerializer):

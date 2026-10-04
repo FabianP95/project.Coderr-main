@@ -1,0 +1,12 @@
+[tool.ruff]
+target-version = "py314"
+
+extend-exclude = [
+    "**/migrations/*",
+]
+
+[tool.ruff.lint]
+ignore = [
+   
+    "RUF012",
+]

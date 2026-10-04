@@ -1,15 +1,14 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
 
-
 from .views import (
+    BaseInfoView,
+    CompletedOrdersView,
+    OfferDetailView,
     OfferViewSet,
+    OrdersDetailView,
     OrderViewSet,
     ReviewViewSet,
-    BaseInfoView,
-    OfferDetailView,
-    OrdersDetailView,
-    CompletedOrdersView,
 )
 
 router = routers.SimpleRouter()
