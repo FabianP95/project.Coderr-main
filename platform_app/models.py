@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from user_auth_app.models import User
@@ -41,8 +41,61 @@ class OfferDetail(models.Model):
 
 
 class Order(models.Model):
-    pass
+    class Status(models.TextChoices):
+        IN_PROGRESS = "in_progress", "In_progress"
+        COMPLETED = "completed", "Completed"
+        CANCELLED = "cancelled", "Cancelled"
+
+    customer_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="customer_orders"
+    )
+    business_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="business_orders"
+    )
+
+    title = models.CharField(max_length=255)
+    revisions = models.IntegerField(default=0, validators=[MinValueValidator(-1)])
+    delivery_time_in_days = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)]
+    )
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, validators=[MinValueValidator(0)]
+    )
+    features = models.JSONField(default=list, blank=True)
+    offer_type = models.CharField(max_length=10, choices=OfferDetail.Type.choices)
+    status = models.CharField(
+        max_length=15, choices=Status.choices, default=Status.IN_PROGRESS
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Review(models.Model):
-    pass
+    business_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="customer_reviews"
+    )
+    reviewer = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name="reviews",
+        null=True,
+        blank=True
+    )
+    rating = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    description = models.TextField(max_length=500, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["business_user", "reviewer"], name="unique_review_per_user"
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(business_user=models.F("reviewer")),
+                name="prevent_self_review",
+            ),
+        ]
