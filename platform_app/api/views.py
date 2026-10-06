@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 
 from .serializers import (
     OfferSerializer,
+    OfferDetailSerializer,
+    OfferDetailsSerializer,
     OrderSerializer,
     ReviewSerializer,
 )
@@ -14,7 +16,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     serializer_class = OfferSerializer
 
 
-class OfferDetailView(generics.ListAPIView):
+class OfferDetailView(generics.ModelViewSet):
      permission_classes = [IsAuthenticated]
 
 
