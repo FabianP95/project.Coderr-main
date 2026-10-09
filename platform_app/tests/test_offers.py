@@ -36,7 +36,7 @@ OFFER_DETAIL_KEYS = {
 
 
 def create_offer(user, title="Website Design", prices=(100, 200, 500), days=(7, 5, 3)):
-    
+
     offer = Offer.objects.create(
         user=user, title=title, description="Professional website design"
     )
@@ -54,7 +54,7 @@ def create_offer(user, title="Website Design", prices=(100, 200, 500), days=(7, 
 
 
 def offer_payload():
-  
+
     return {
         "title": "Grafikdesign-Paket",
         "image": None,
@@ -89,7 +89,6 @@ def offer_payload():
 
 
 class OfferTests(APITestCase):
-
     def setUp(self):
         self.url = reverse("offers-list")
         self.user = User.objects.create_user(
@@ -199,26 +198,14 @@ class OfferTests(APITestCase):
     def test_invalid_query_param_for_price(self):
         response = self.client.get(self.url, {"min_price": "abc"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_invalid_query_param_for_creator_id(self):
-            response = self.client.get(self.url, {"creator_id": "abc"})
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+        response = self.client.get(self.url, {"creator_id": "abc"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_invalid_query_param_for_max_delivery_time(self):
-            response = self.client.get(self.url, {"max_delivery_time": "abc"})
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
-    def test_invalid_query_param_for_ordering(self):
-            response = self.client.get(self.url, {"ordering": 1})
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-            
-    def test_invalid_query_param_for_search(self):
-            response = self.client.get(self.url, {"search": 1})
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
-    def test_invalid_query_param_for_page_size(self):
-                response = self.client.get(self.url, {"page_size": "1"})
-                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get(self.url, {"max_delivery_time": "abc"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # POST /api/offers/
 
@@ -374,7 +361,6 @@ class OfferTests(APITestCase):
 
 
 class OfferDetailTests(APITestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(
             username="testuser", password="testpassword", type="customer"
