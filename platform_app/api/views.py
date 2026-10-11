@@ -1,14 +1,23 @@
-from django.db.models import Min
+from django.db.models import Avg, Min, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from platform_app.models import Offer, OfferDetail
+from platform_app.models import Offer, OfferDetail, Order, Review
+from user_auth_app.models import User
 
 from .filters import OfferFilter
 from .pagination import OfferListPagination
-from .permissions import IsBusinessUser, IsOfferCreator
+from .permissions import (
+    IsBusinessUser,
+    IsCustomerUser,
+    IsOfferCreator,
+    IsOrderReceiver,
+    IsStaff,
+)
 from .serializers import (
     OfferDetailSerializer,
     OfferReadsSerializer,
@@ -66,16 +75,54 @@ class OfferDetailView(generics.RetrieveAPIView):
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
 
+    def get_queryset(self):
+        if self.action == "list":
+            user = self.request.user
+            return Order.objects.filter(Q(customer_user=user) | Q(business_user=user))
+        else:
+            return Order.objects.all()
 
-class OrdersDetailView(APIView):
+    def perform_create(self, serializer):
+
+        offer_detail_id = serializer.validated_data.get("offer_detail_id")
+        offer_detail = get_object_or_404(OfferDetail, id=offer_detail_id)
+        serializer.save(customer_user=self.request.user, offer_detail=offer_detail)
+
+    def get_permissions(self):
+        if self.action == "list":
+            return [IsAuthenticated()]
+        if self.action == "create":
+            return [IsAuthenticated(), IsCustomerUser()]
+        if self.action in ("update", "partial_update"):
+            return [IsAuthenticated(), IsOrderReceiver()]
+        if self.action == "destroy":
+            return [IsAuthenticated(), IsStaff()]
+        return [IsAuthenticated()]
+
+
+class BaseOrderCountView(APIView):
     permission_classes = [IsAuthenticated]
+    order_status = None
+    response_key = None
+
+    def get(self, request, pk):
+        business_user = get_object_or_404(User, pk=pk, type=User.Type.BUSINESS)
+        count = Order.objects.filter(
+            business_user=business_user, status=self.order_status
+        ).count()
+        return Response({self.response_key: count})
 
 
-class CompletedOrdersView(APIView):
-    permission_classes = [IsAuthenticated]
+class OrdersDetailView(BaseOrderCountView):
+    order_status = Order.Status.IN_PROGRESS
+    response_key = "order_count"
+
+
+class CompletedOrdersView(BaseOrderCountView):
+    order_status = Order.Status.COMPLETED
+    response_key = "completed_order_count"
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -85,3 +132,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class BaseInfoView(APIView):
     permission_classes = [AllowAny]
+
+    def get(self, request):
+        reviews = Review.objects.count()
+        business_users = User.objects.filter(type=User.Type.BUSINESS).count()
+        offers = Offer.objects.count()
+        avg = Review.objects.aggregate(avg_rating=Avg("rating"))["avg_rating"]
+        average_rating = round(avg, 1) if avg is not None else 0
+        return Response(
+            {
+                "review_count": reviews,
+                "average_rating": average_rating,
+                "business_profile_count": business_users,
+                "offer_count": offers,
+            }
+        )
