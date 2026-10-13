@@ -87,6 +87,4 @@ class BaseInfoTests(APITestCase):
     def test_base_info_write_methods_not_allowed(self):
         for method in ("post", "put", "patch", "delete"):
             response = getattr(self.client, method)(self.url, {}, format="json")
-            self.assertEqual(
-                response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
-            )
+            self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
