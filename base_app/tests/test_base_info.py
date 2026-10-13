@@ -2,10 +2,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from platform_app.models import Review
+from offers_app.tests.test_offers import create_offer
+from reviews_app.models import Review
 from user_auth_app.models import User
-
-from .test_offers import create_offer
 
 
 class BaseInfoTests(APITestCase):

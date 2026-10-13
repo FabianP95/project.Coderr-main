@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient, APITestCase
 
-from platform_app.models import Offer, OfferDetail
+from offers_app.models import Offer, OfferDetail
 from user_auth_app.models import User
 
 OFFER_LIST_KEYS = {

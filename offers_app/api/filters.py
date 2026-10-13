@@ -1,7 +1,7 @@
 import django_filters
 from django_filters import FilterSet
 
-from platform_app.models import Offer
+from offers_app.models import Offer
 
 
 class OfferFilter(FilterSet):

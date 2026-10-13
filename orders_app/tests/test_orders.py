@@ -3,10 +3,9 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient, APITestCase
 
-from platform_app.models import Order
+from offers_app.tests.test_offers import create_offer
+from orders_app.models import Order
 from user_auth_app.models import User
-
-from .test_offers import create_offer
 
 ORDER_KEYS = {
     "id",

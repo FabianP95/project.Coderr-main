@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient, APITestCase
 
-from platform_app.models import Review
+from reviews_app.models import Review
 from user_auth_app.models import User
 
 REVIEW_KEYS = {
@@ -147,7 +147,7 @@ class ReviewTests(APITestCase):
         self.authenticate_as(self.second_business_user)
         data = {"business_user": self.business_user.id, "rating": 5}
         response = self.client.post(self.url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_second_review_for_same_business_user_is_forbidden(self):
         data = {"business_user": self.business_user.id, "rating": 1}
@@ -162,6 +162,11 @@ class ReviewTests(APITestCase):
 
     def test_create_review_missing_rating(self):
         data = {"business_user": self.second_business_user.id}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_review_missing_description(self):
+        data = {"business_user": 2, "rating": 4}
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
