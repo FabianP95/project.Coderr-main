@@ -18,6 +18,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         ]
 
         read_only_fields = ["reviewer"]
+        extra_kwargs = {"description": {"required": True}}
 
     def validate_business_user(self, value):
         view = self.context.get("view")
