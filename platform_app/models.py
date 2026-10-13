@@ -32,7 +32,6 @@ class OfferDetail(models.Model):
     offer_type = models.CharField(max_length=10, choices=Type.choices)
 
     class Meta:
-
         constraints = [
             models.UniqueConstraint(
                 fields=["offer", "offer_type"], name="unique_offer_type_per_offer"
@@ -75,11 +74,7 @@ class Review(models.Model):
         User, on_delete=models.CASCADE, related_name="customer_reviews"
     )
     reviewer = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        related_name="reviews",
-        null=True,
-        blank=True
+        User, on_delete=models.SET_NULL, related_name="reviews", null=True, blank=True
     )
     rating = models.PositiveIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
@@ -89,7 +84,6 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-
         constraints = [
             models.UniqueConstraint(
                 fields=["business_user", "reviewer"], name="unique_review_per_user"

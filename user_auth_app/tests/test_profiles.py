@@ -7,7 +7,6 @@ from user_auth_app.models import User
 
 
 class RegistrationTests(APITestCase):
-
     def setUp(self):
         self.url = reverse("registration")
         self.user = User.objects.create_user(
@@ -199,7 +198,6 @@ class LoginTests(APITestCase):
 
 
 class UserProfileTests(APITestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(
             username="testuser", password="testpassword"
@@ -360,7 +358,6 @@ class UserProfileTests(APITestCase):
 
 
 class BusinessProfilesTests(APITestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(
             username="testuser", password="testpassword", type="business"
@@ -388,7 +385,6 @@ class BusinessProfilesTests(APITestCase):
                 "type",
             },
         )
-       
 
     def test_list_contains_only_business_users(self):
         User.objects.create_user(
@@ -411,7 +407,6 @@ class BusinessProfilesTests(APITestCase):
 
 
 class CustomerProfilesTests(APITestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(
             username="testuser", password="testpassword", type="customer"
@@ -436,7 +431,6 @@ class CustomerProfilesTests(APITestCase):
                 "type",
             },
         )
-       
 
     def test_list_contains_only_customer_users(self):
         User.objects.create_user(

@@ -9,7 +9,9 @@ class User(AbstractUser):
         CUSTOMER = "customer", "Customer"
         BUSINESS = "business", "Business"
 
-    file = models.FileField(upload_to="profile_pictures", blank=True, null=True,default="")
+    file = models.FileField(
+        upload_to="profile_pictures", blank=True, null=True, default=""
+    )
     uploaded_at = models.DateTimeField(auto_now_add=True)
     location = models.CharField(max_length=255, blank=True, default="")
     tel = models.CharField(max_length=20, blank=True, default="")
