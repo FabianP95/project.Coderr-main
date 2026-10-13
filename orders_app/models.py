@@ -6,7 +6,15 @@ from user_auth_app.models import User
 
 
 class Order(models.Model):
+    """Order placed by a customer for an offer detail of a business user.
+
+    The offer detail data is copied into the order so later changes
+    to the offer do not affect existing orders.
+    """
+
     class Status(models.TextChoices):
+        """Possible states of an order."""
+
         IN_PROGRESS = "in_progress", "In_progress"
         COMPLETED = "completed", "Completed"
         CANCELLED = "cancelled", "Cancelled"

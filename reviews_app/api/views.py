@@ -9,6 +9,8 @@ from .serializers import ReviewSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """CRUD endpoints for reviews with filtering and ordering."""
+
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
     filter_backends = [
@@ -21,9 +23,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ordering_fields = ["updated_at", "rating"]
 
     def perform_create(self, serializer):
+        """Save the new review with the requesting user as reviewer."""
         serializer.save(reviewer=self.request.user)
 
     def get_permissions(self):
+        """Return the permissions depending on the current action.
+
+        create: customers without an existing review for this business user,
+        update/delete: review author only, otherwise: authenticated users.
+        """
         if self.action == "list":
             return [IsAuthenticated()]
         if self.action == "create":

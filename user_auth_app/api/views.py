@@ -17,9 +17,15 @@ from .serializers import (
 
 
 class CustomLogin(APIView):
+    """Log in a user and return an auth token."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Validate the credentials and return token and user data.
+
+        Returns 400 with the validation errors if the login fails.
+        """
         serializer = UserLoginSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -37,9 +43,15 @@ class CustomLogin(APIView):
 
 
 class RegistrationView(APIView):
+    """Register a new user and return an auth token."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Create the user and return token and user data.
+
+        Returns 400 with the validation errors if the registration fails.
+        """
         serializer = RegistrationSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -57,18 +69,24 @@ class RegistrationView(APIView):
 
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
+    """Retrieve a profile or update it if the user is the owner."""
+
     permission_classes = [IsAuthenticated, IsProfileCreator]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class BusinessProfileListView(generics.ListAPIView):
+    """List all business profiles."""
+
     permission_classes = [IsAuthenticated]
     serializer_class = BusinessUserSerializer
     queryset = User.objects.filter(type=User.Type.BUSINESS)
 
 
 class CustomerProfileListView(generics.ListAPIView):
+    """List all customer profiles."""
+
     permission_classes = [IsAuthenticated]
     serializer_class = CustomerUserSerializer
     queryset = User.objects.filter(type=User.Type.CUSTOMER)

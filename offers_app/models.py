@@ -5,6 +5,8 @@ from user_auth_app.models import User
 
 
 class Offer(models.Model):
+    """Offer created by a business user, grouping several offer details."""
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="offers")
     title = models.CharField(max_length=255, blank=False)
     image = models.FileField(upload_to="offer_pictures", blank=True, null=True)
@@ -14,7 +16,15 @@ class Offer(models.Model):
 
 
 class OfferDetail(models.Model):
+    """Single package (basic, standard or premium) belonging to an offer.
+
+    Each offer type may only exist once per offer.
+    A revisions value of -1 stands for unlimited revisions.
+    """
+
     class Type(models.TextChoices):
+        """Available package types of an offer detail."""
+
         BASIC = "basic", "Basic"
         STANDARD = "standard", "Standard"
         PREMIUM = "premium", "Premium"

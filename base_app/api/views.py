@@ -9,9 +9,16 @@ from user_auth_app.models import User
 
 
 class BaseInfoView(APIView):
+    """Public endpoint returning general statistics about the platform."""
+
     permission_classes = [AllowAny]
 
     def get(self, request):
+        """Return review count, average rating, business profile count and offer count.
+
+        The average rating is rounded to one decimal place and falls back
+        to 0 if no reviews exist yet.
+        """
         reviews = Review.objects.count()
         business_users = User.objects.filter(type=User.Type.BUSINESS).count()
         offers = Offer.objects.count()

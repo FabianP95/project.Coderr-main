@@ -16,6 +16,8 @@ from .serializers import (
 
 
 class OfferViewSet(viewsets.ModelViewSet):
+    """CRUD endpoints for offers with filtering, search, ordering and pagination."""
+
     queryset = Offer.objects.all()
     pagination_class = OfferListPagination
     filter_backends = [
@@ -29,6 +31,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     ordering_fields = ["updated_at", "min_price"]
 
     def get_queryset(self):
+        """Return all offers annotated with their minimum price and delivery time."""
 
         return Offer.objects.annotate(
             min_price=Min("details__price"),
@@ -36,6 +39,11 @@ class OfferViewSet(viewsets.ModelViewSet):
         )
 
     def get_permissions(self):
+        """Return the permissions depending on the current action.
+
+        list: everyone, create: business users only,
+        update/delete: offer creator only, otherwise: authenticated users.
+        """
         if self.action == "list":
             return [AllowAny()]
         if self.action == "create":
@@ -45,18 +53,23 @@ class OfferViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
     def perform_create(self, serializer):
+        """Save the new offer with the requesting user as creator."""
         serializer.save(user=self.request.user)
 
     def get_serializer_class(self):
+        """Use the write serializer for write actions, otherwise the read serializer."""
         if self.action in ("create", "update", "partial_update", "destroy"):
             return OfferWriteSerializer
         return OfferReadsSerializer
 
 
 class OfferDetailView(generics.RetrieveAPIView):
+    """Return a single offer detail for authenticated users."""
+
     permission_classes = [IsAuthenticated]
     serializer_class = OfferDetailSerializer
 
     def get_queryset(self):
+        """Return the offer details belonging to the offer id from the url."""
         offer_id = self.kwargs["pk"]
         return OfferDetail.objects.filter(offer_id=offer_id)

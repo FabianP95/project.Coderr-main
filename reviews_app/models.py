@@ -5,6 +5,12 @@ from user_auth_app.models import User
 
 
 class Review(models.Model):
+    """Rating (1-5) written by a reviewer about a business user.
+
+    Each reviewer may review a business user only once
+    and users cannot review themselves.
+    """
+
     business_user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="customer_reviews"
     )
