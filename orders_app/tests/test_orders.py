@@ -108,7 +108,7 @@ class OrderTests(APITestCase):
         self.assertEqual(set(response.data.keys()), ORDER_KEYS)
         self.assertEqual(response.data["customer_user"], self.customer_user.id)
         self.assertEqual(response.data["business_user"], self.business_user.id)
-        self.assertEqual(response.data["title"], offer.title)
+        self.assertEqual(response.data["title"], offer_detail.title)
         self.assertEqual(response.data["revisions"], offer_detail.revisions)
         self.assertEqual(
             response.data["delivery_time_in_days"], offer_detail.delivery_time_in_days
