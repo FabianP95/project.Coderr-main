@@ -70,6 +70,5 @@ class OfferDetailView(generics.RetrieveAPIView):
     serializer_class = OfferDetailSerializer
 
     def get_queryset(self):
-        """Return the offer details belonging to the offer id from the url."""
-        offer_id = self.kwargs["pk"]
-        return OfferDetail.objects.filter(offer_id=offer_id)
+        """Return all offerdetails."""
+        return OfferDetail.objects.all()
