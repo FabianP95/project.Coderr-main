@@ -9,10 +9,13 @@ from user_auth_app.models import User
 
 
 class UserLoginSerializer(serializers.Serializer):
+    """Validate login credentials."""
+
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        """Authenticate the user and add it to the validated data as "user"."""
         username = data.get("username")
         password = data.get("password")
 
@@ -26,6 +29,8 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """Validate registration data and create a new user."""
+
     password = serializers.CharField(write_only=True)
     repeated_password = serializers.CharField(write_only=True)
 
@@ -38,6 +43,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
 
     def validate_email(self, value):
+        """Ensure the email is not already used (case insensitive)."""
 
         if User.objects.filter(email__iexact=value).exists():
             raise serializers.ValidationError("Email already exists")
@@ -45,6 +51,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        """Ensure that password and repeated_password match."""
 
         if data["password"] != data["repeated_password"]:
             raise serializers.ValidationError(
@@ -54,6 +61,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        """Create the user with a hashed password."""
 
         validated_data.pop("repeated_password")
 
@@ -63,6 +71,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Full profile representation used for the profile detail endpoint."""
+
     user = serializers.IntegerField(source="id", read_only=True)
     created_at = serializers.DateTimeField(source="date_joined", read_only=True)
 
@@ -85,6 +95,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["username", "type"]
 
     def validate_email(self, value):
+        """Ensure the email is not used by another user (case insensitive)."""
         existing_users = User.objects.filter(email__iexact=value)
 
         if self.instance is not None:
@@ -96,6 +107,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BusinessUserSerializer(UserSerializer):
+    """Profile representation for the business profile list."""
+
     class Meta:
         model = User
         fields = [
@@ -113,6 +126,8 @@ class BusinessUserSerializer(UserSerializer):
 
 
 class CustomerUserSerializer(UserSerializer):
+    """Profile representation for the customer profile list."""
+
     class Meta:
         model = User
         fields = [

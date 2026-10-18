@@ -5,7 +5,11 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """Custom user extended by profile fields and a user type."""
+
     class Type(models.TextChoices):
+        """Available user types of the platform."""
+
         CUSTOMER = "customer", "Customer"
         BUSINESS = "business", "Business"
 

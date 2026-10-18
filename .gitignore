@@ -42,3 +42,7 @@ endpoints_doc.txt
 #Testing
 .postman
 postman/
+
+#Migrations
+*/migrations/*
+!*/migrations/__init__.py
