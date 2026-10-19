@@ -150,7 +150,11 @@ class ReviewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_second_review_for_same_business_user_is_forbidden(self):
-        data = {"business_user": self.business_user.id, "rating": 1}
+        data = {
+            "business_user": self.business_user.id,
+            "rating": 1,
+            "description": "Great collaboration.",
+        }
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
@@ -166,7 +170,12 @@ class ReviewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_review_missing_description(self):
-        data = {"business_user": 2, "rating": 4}
+        data = {"business_user": self.second_business_user.id, "rating": 4}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_review_missing_description_with_existing_review(self):
+        data = {"business_user": self.business_user.id, "rating": 4}
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -176,17 +185,29 @@ class ReviewTests(APITestCase):
 
     def test_create_review_rating_out_of_range(self):
         for rating in (0, 6):
-            data = {"business_user": self.second_business_user.id, "rating": rating}
+            data = {
+                "business_user": self.second_business_user.id,
+                "rating": rating,
+                "description": "Great collaboration.",
+            }
             response = self.client.post(self.url, data, format="json")
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_review_business_user_not_found(self):
-        data = {"business_user": 9999, "rating": 5}
+        data = {
+            "business_user": 9999,
+            "rating": 5,
+            "description": "Great collaboration.",
+        }
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_review_for_customer_user_is_invalid(self):
-        data = {"business_user": self.second_customer_user.id, "rating": 5}
+        data = {
+            "business_user": self.second_customer_user.id,
+            "rating": 5,
+            "description": "Great collaboration.",
+        }
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
