@@ -1,17 +1,6 @@
 from rest_framework.permissions import BasePermission
 
-from reviews_app.models import Review
 from user_auth_app.models import User
-
-
-class HasNotWrittenReviewBefore(BasePermission):
-    """Deny creating a second review for the same business user."""
-
-    def has_permission(self, request, view):
-        """Return True if the user has not reviewed the given business user yet."""
-        return not Review.objects.filter(
-            reviewer=request.user, business_user=request.data.get("business_user")
-        ).exists()
 
 
 class IsReviewer(BasePermission):
